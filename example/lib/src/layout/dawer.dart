@@ -59,7 +59,7 @@ class _CustomCustomDawerState extends State<CustomDawer>
     return SlideTransition(
       position: _slideInAnimation,
       child: Container(
-        width: 300,
+        width: 500,
         decoration: BoxDecoration(
           borderRadius: widget.direction == HorizontalDirection.start
               ? _roundCornersOnTheRight()
