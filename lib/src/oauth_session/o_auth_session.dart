@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:komainu/src/oauth_session/bloc/o_auth_session_bloc.dart';
 import 'package:provider/provider.dart';
+
+import 'bloc/o_auth_session_bloc.dart';
 
 export 'bloc/o_auth_session_bloc.dart';
 export 'o_auth_configuration.dart';

@@ -1,8 +1,7 @@
+import 'package:example/src/welcome/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-import 'layout/home.dart';
 
 class KomainuExample extends StatelessWidget {
   const KomainuExample({Key? key}) : super(key: key);
@@ -18,7 +17,7 @@ class KomainuExample extends StatelessWidget {
           secondary: Colors.deepOrangeAccent,
         ),
       ),
-      home: const Home(),
+      home: const WelcomeScreen(),
     );
   }
 }

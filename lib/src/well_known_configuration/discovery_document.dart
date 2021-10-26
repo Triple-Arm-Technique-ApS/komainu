@@ -1,7 +1,10 @@
 import 'dart:convert';
 
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
-import 'package:komainu/src/well_known_configuration/discovery_document_exception.dart';
+import 'package:provider/provider.dart';
+import 'bloc/well_known_configuration_bloc.dart';
+import 'discovery_document_exception.dart';
 
 class DiscoveryDocument {
   /// The Issuer Identifier of the OpenID Connect Provider. This value is the same as the iss claim value in the ID tokens issued by this provider.
@@ -81,5 +84,14 @@ class DiscoveryDocument {
     }
 
     return DiscoveryDocument.fromJson(jsonDecode(response.body));
+  }
+
+  /// Obtains the [DiscoveryDocument] of the [WellKnownConfigurationBloc] if
+  /// the [WellKnownConfigurationState] is not in a successful state or the calling widget
+  /// isn't an decentant of [WellKnownConfigurationBloc] an [Error] os thrown.
+  factory DiscoveryDocument.of(BuildContext context) {
+    final state = context.read<WellKnownConfigurationBloc>().state;
+    assert(state.discoveryDocument != null);
+    return context.read<WellKnownConfigurationBloc>().state.discoveryDocument!;
   }
 }

@@ -1,17 +1,18 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'bloc/well_known_configuration_bloc.dart';
+import 'well_known_configuration_builder.dart';
+import 'well_known_configuration_listener.dart';
 
-typedef WellKnownConfigurationBuilderCallback = Widget Function(
-    BuildContext, WellKnownConfigurationState);
-
-class WellKnownConfigurationBuilder extends StatelessWidget {
+class WellKnownConfigurationConsumer extends StatelessWidget {
   final Uri wellKnownConfigurationEndpoint;
   final WellKnownConfigurationBuilderCallback builder;
-  const WellKnownConfigurationBuilder({
+  final WellKnownConfigurationListenerCallback listener;
+  const WellKnownConfigurationConsumer({
     Key? key,
     required this.wellKnownConfigurationEndpoint,
     required this.builder,
+    required this.listener,
   }) : super(key: key);
 
   @override
@@ -20,7 +21,8 @@ class WellKnownConfigurationBuilder extends StatelessWidget {
       create: (context) => WellKnownConfigurationBloc()
         ..add(WellKnownConfigurationRequested(wellKnownConfigurationEndpoint)),
       child:
-          BlocBuilder<WellKnownConfigurationBloc, WellKnownConfigurationState>(
+          BlocConsumer<WellKnownConfigurationBloc, WellKnownConfigurationState>(
+        listener: listener,
         builder: builder,
       ),
     );

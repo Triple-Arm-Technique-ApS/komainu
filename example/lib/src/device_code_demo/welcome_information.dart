@@ -17,20 +17,14 @@ class WelcomeInformation extends StatelessWidget {
           children: [
             Text(
               'Device Code',
-              style: Theme.of(context)
-                  .textTheme
-                  .headline5!
-                  .copyWith(color: Theme.of(context).colorScheme.onPrimary),
+              style: Theme.of(context).textTheme.headline5,
             ),
             const SizedBox(
               height: 20,
             ),
             Text(
               'Example of device code grant usage in Flutter.',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyText1!
-                  .copyWith(color: Theme.of(context).colorScheme.onPrimary),
+              style: Theme.of(context).textTheme.bodyText1,
               textAlign: TextAlign.center,
             ),
             const SizedBox(
@@ -38,10 +32,7 @@ class WelcomeInformation extends StatelessWidget {
             ),
             Text(
               'To get started you need to authorize this application.',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyText1!
-                  .copyWith(color: Theme.of(context).colorScheme.onPrimary),
+              style: Theme.of(context).textTheme.bodyText1,
               textAlign: TextAlign.center,
             ),
             const SizedBox(

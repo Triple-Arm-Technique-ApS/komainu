@@ -10,3 +10,5 @@ class DeviceCodeFailedEvent extends DeviceCodeEvent {}
 class DeviceCodeSuccessEvent extends DeviceCodeEvent {}
 
 class DeviceCodeRetryEvent extends DeviceCodeEvent {}
+
+class DeviceCodeStartEvent extends DeviceCodeEvent {}

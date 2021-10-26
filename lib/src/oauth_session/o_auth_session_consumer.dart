@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'bloc/o_auth_session_bloc.dart';
 import 'o_auth_session_builder.dart';
 import 'o_auth_session_listener.dart';
 import 'o_auth_session_provider.dart';
@@ -17,6 +19,12 @@ class OAuthSessionConsumer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return OAuthSessionProvider(
+      create: create,
+      child: BlocConsumer<OAuthSessionBloc, OAuthSessionState>(
+        builder: builder,
+        listener: listener,
+      ),
+    );
   }
 }
