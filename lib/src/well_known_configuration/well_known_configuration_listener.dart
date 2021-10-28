@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:http/http.dart';
 import 'bloc/well_known_configuration_bloc.dart';
 
 typedef WellKnownConfigurationListenerCallback = void Function(
@@ -19,7 +21,7 @@ class WellKnownConfigurationListener extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => WellKnownConfigurationBloc()
+      create: (context) => WellKnownConfigurationBloc(Client())
         ..add(WellKnownConfigurationRequested(wellKnownConfigurationEndpoint)),
       child:
           BlocListener<WellKnownConfigurationBloc, WellKnownConfigurationState>(

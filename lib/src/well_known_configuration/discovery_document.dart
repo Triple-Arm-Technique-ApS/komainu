@@ -1,12 +1,10 @@
-import 'dart:convert';
-
+import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'bloc/well_known_configuration_bloc.dart';
-import 'discovery_document_exception.dart';
 
-class DiscoveryDocument {
+import 'bloc/well_known_configuration_bloc.dart';
+
+class DiscoveryDocument extends Equatable {
   /// The Issuer Identifier of the OpenID Connect Provider. This value is the same as the iss claim value in the ID tokens issued by this provider.
   final Uri issuer;
 
@@ -33,15 +31,16 @@ class DiscoveryDocument {
   /// [responseTypesSupported] array containing a list of OAuth 2.0 response modes supported by this provider.
   final List<String> responseTypesSupported;
 
-  DiscoveryDocument(
-      {required this.issuer,
-      required this.authorizationEndpoint,
-      required this.tokenEndpoint,
-      required this.responseModesSupported,
-      required this.responseTypesSupported,
-      this.userInfoEndpoint,
-      this.endSessionEndpoint,
-      this.jwksUri});
+  const DiscoveryDocument({
+    required this.issuer,
+    required this.authorizationEndpoint,
+    required this.tokenEndpoint,
+    required this.responseModesSupported,
+    required this.responseTypesSupported,
+    this.userInfoEndpoint,
+    this.endSessionEndpoint,
+    this.jwksUri,
+  });
 
   factory DiscoveryDocument.fromJson(Map<String, dynamic> json) {
     return DiscoveryDocument(
@@ -69,23 +68,6 @@ class DiscoveryDocument {
     );
   }
 
-  /// Sends a http request to the well known configuration endpoint
-  /// and parses the response into a [DiscoveryDocument], if a http failure
-  /// occurs an [DiscoveryDocumentException] is thrown.
-  static Future<DiscoveryDocument> fromWellKnownConfigurationEndpoint(
-      Uri wellKnownConfigurationEndpoint) async {
-    final response = await http.get(wellKnownConfigurationEndpoint);
-    if (response.statusCode < 200 && response.statusCode > 299) {
-      throw DiscoveryDocumentException(
-        statusCode: response.statusCode,
-        reasonPhrase: response.reasonPhrase,
-        body: response.body,
-      );
-    }
-
-    return DiscoveryDocument.fromJson(jsonDecode(response.body));
-  }
-
   /// Obtains the [DiscoveryDocument] of the [WellKnownConfigurationBloc] if
   /// the [WellKnownConfigurationState] is not in a successful state or the calling widget
   /// isn't an decentant of [WellKnownConfigurationBloc] an [Error] os thrown.
@@ -94,4 +76,16 @@ class DiscoveryDocument {
     assert(state.discoveryDocument != null);
     return context.read<WellKnownConfigurationBloc>().state.discoveryDocument!;
   }
+
+  @override
+  List<Object?> get props => [
+        issuer,
+        authorizationEndpoint,
+        tokenEndpoint,
+        userInfoEndpoint,
+        endSessionEndpoint,
+        jwksUri,
+        responseModesSupported,
+        responseTypesSupported
+      ];
 }

@@ -31,7 +31,7 @@ class DeviceCodeScreen extends StatelessWidget {
         listener: (context, state) {
           if (state.failed) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(state.exception!.message),
+              content: Text(state.failure!.message),
               duration: const Duration(seconds: 1),
               action: SnackBarAction(
                 label: 'Dismiss',
