@@ -30,7 +30,7 @@ class DeviceCodeBloc extends Bloc<DeviceCodeEvent, DeviceCodeState> {
         try {
           var response = await initializeAuthorization();
           emit(
-            DeviceCodeStateReady(response.verificationUri, response.userCode),
+            DeviceCodeReadyState(response.verificationUri, response.userCode),
           );
           _tickerSubscription = _ticker
               .tick(
@@ -39,12 +39,21 @@ class DeviceCodeBloc extends Bloc<DeviceCodeEvent, DeviceCodeState> {
             interval: response.interval,
             expiresIn: response.expiresIn,
           )
-              .listen((event) {
-            if (event.badVerificationCode) {}
-            if (event.declined) {}
-            if (event.expired) {}
-            if (event.unexpected) {}
-          });
+              .listen(
+            (event) {
+              if (event.badVerificationCode) {
+                emit(DeviceCodeBadVerificationCodeState());
+              } else if (event.declined) {
+                emit(DeviceCodeAuthorizationDeclinedState());
+              } else if (event.expired) {
+                emit(DeviceCodeExpiredState());
+              } else if (event.unexpected) {
+                emit(DeviceCodeUnexpectedFailureState());
+              } else if (event.successful) {
+                emit(DeviceCodeSucceedState());
+              }
+            },
+          );
         } on HttpException catch (e) {
           /// emit unexepected error while initializing the device code authroization.
         }
