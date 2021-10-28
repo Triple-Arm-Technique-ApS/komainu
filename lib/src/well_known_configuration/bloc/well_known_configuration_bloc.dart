@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:http/http.dart';
+import 'package:komainu/src/building_blocks/exceptions/http_exception.dart';
 import '../discovery_document.dart';
 import 'package:meta/meta.dart';
 
-import '../discovery_document_exception.dart';
 import '../well_known_configuration.dart';
 
 part 'well_known_configuration_event.dart';
@@ -26,7 +26,7 @@ class WellKnownConfigurationBloc
           emit(
             WellKnownConfigurationState.successful(discoveryDocument),
           );
-        } on DiscoveryDocumentException catch (exception) {
+        } on HttpException catch (exception) {
           emit(
             WellKnownConfigurationState.failed(
               WellKnownConfigurationFailure(
@@ -48,17 +48,17 @@ class WellKnownConfigurationBloc
     try {
       final response = await client.get(wellKnownConfigurationEndpoint);
       if (response.statusCode < 200 || response.statusCode > 299) {
-        throw DiscoveryDocumentException(
+        throw HttpException(
           statusCode: response.statusCode,
           reasonPhrase: response.reasonPhrase,
           body: response.body,
         );
       }
       return DiscoveryDocument.fromJson(jsonDecode(response.body));
-    } on DiscoveryDocumentException catch (_) {
+    } on HttpException catch (_) {
       rethrow;
     } catch (e) {
-      throw DiscoveryDocumentException(
+      throw HttpException(
         statusCode: 0,
         reasonPhrase: 'Unexpected',
         body: 'Exception was thrown: $e',

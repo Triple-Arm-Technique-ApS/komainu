@@ -1,15 +1,19 @@
 import 'dart:convert';
 
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'package:oauth2/oauth2.dart';
 
+import '../../oauth_session/o_auth_configuration.dart';
 import 'device_code_ticker_event.dart';
 import 'device_polling_response.dart';
 
 class DeviceCodeTicker {
+  final http.Client client;
+
+  DeviceCodeTicker(this.client);
+
   Stream<DeviceCodeTickerEvent> tick({
-    required String clientId,
-    required Uri tokenEndpoint,
+    required OAuthConfiguration configuration,
     required String deviceCode,
     required int interval,
     required int expiresIn,
@@ -20,9 +24,9 @@ class DeviceCodeTicker {
         return DeviceCodeTickerEvent.expired();
       }
       final response = await _requestToken(
-        clientId: clientId,
+        clientId: configuration.clientId,
         deviceCode: deviceCode,
-        tokenEndpoint: tokenEndpoint,
+        tokenEndpoint: configuration.tokenEndpoint,
       );
       switch (response.statusCode) {
         case 200:
@@ -39,7 +43,7 @@ class DeviceCodeTicker {
     });
   }
 
-  Future<Response> _requestToken({
+  Future<http.Response> _requestToken({
     required Uri tokenEndpoint,
     required String clientId,
     required String deviceCode,
@@ -50,10 +54,10 @@ class DeviceCodeTicker {
       'device_code': deviceCode
     };
 
-    return await post(tokenEndpoint, body: payload);
+    return await client.post(tokenEndpoint, body: payload);
   }
 
-  DeviceCodeTickerEvent _handleBadRequest(Response response) {
+  DeviceCodeTickerEvent _handleBadRequest(http.Response response) {
     final dto = DevicePollingResponse.fromJson(
       jsonDecode(response.body),
     );
