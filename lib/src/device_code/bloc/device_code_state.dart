@@ -16,6 +16,15 @@ class DeviceCodeReadyState extends DeviceCodeState {
   DeviceCodeReadyState(this.verificationUri, this.userCode);
 }
 
+/// The [DeviceCodeBloc] is currently polling the token endpoint
+/// and parsing the response.
+class DeviceCodeRunningState extends DeviceCodeState {
+  final Uri verificationUri;
+  final String userCode;
+
+  DeviceCodeRunningState(this.verificationUri, this.userCode);
+}
+
 class DeviceCodeSucceedState extends DeviceCodeState {}
 
 class DeviceCodeUnexpectedFailureState extends DeviceCodeState {}

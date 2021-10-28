@@ -51,6 +51,13 @@ class DeviceCodeBloc extends Bloc<DeviceCodeEvent, DeviceCodeState> {
                 emit(DeviceCodeUnexpectedFailureState());
               } else if (event.successful) {
                 emit(DeviceCodeSucceedState());
+              } else {
+                emit(
+                  DeviceCodeRunningState(
+                    response.verificationUri,
+                    response.userCode,
+                  ),
+                );
               }
             },
           );
