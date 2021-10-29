@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
@@ -22,15 +23,18 @@ class DeviceCodeBloc extends Bloc<DeviceCodeEvent, DeviceCodeState> {
 
   DeviceCodeBloc(this.client, this.configuration)
       : _ticker = DeviceCodeTicker(client),
-        super(DeviceCodeInitial()) {
+        super(DeviceCodeState.initial()) {
     on<DeviceCodeEvent>((event, emit) async {
       if (event is DeviceCodeStartEvent) {
-        emit(DeviceCodeStateInitializing());
+        emit(DeviceCodeState.loading());
         _tickerSubscription?.cancel();
         try {
           var response = await initializeAuthorization();
           emit(
-            DeviceCodeReadyState(response.verificationUri, response.userCode),
+            DeviceCodeState.running(
+              response.userCode,
+              response.verificationUri,
+            ),
           );
           _tickerSubscription = _ticker
               .tick(
@@ -42,35 +46,46 @@ class DeviceCodeBloc extends Bloc<DeviceCodeEvent, DeviceCodeState> {
               .listen(
             (event) {
               if (event.badVerificationCode) {
-                emit(DeviceCodeBadVerificationCodeState());
+                emit(DeviceCodeState.badVerificationCode());
               } else if (event.declined) {
-                emit(DeviceCodeAuthorizationDeclinedState());
+                emit(DeviceCodeState.declined());
               } else if (event.expired) {
-                emit(DeviceCodeExpiredState());
+                emit(DeviceCodeState.expired());
               } else if (event.unexpected) {
-                emit(DeviceCodeUnexpectedFailureState());
+                emit(
+                  DeviceCodeState.failed(
+                    DeviceCodeFailureDetails(
+                      statusCode: event.exception!.statusCode,
+                      reasonPhrase: event.exception!.reasonPhrase,
+                      body: event.exception!.body,
+                      message: event.exception!.message,
+                    ),
+                  ),
+                );
               } else if (event.successful) {
-                emit(DeviceCodeSucceedState());
+                emit(DeviceCodeState.success());
               } else {
                 emit(
-                  DeviceCodeRunningState(
-                    response.verificationUri,
+                  DeviceCodeState.running(
                     response.userCode,
+                    response.verificationUri,
                   ),
                 );
               }
             },
           );
         } on HttpException catch (e) {
-          /// emit unexepected error while initializing the device code authroization.
+          emit(
+            DeviceCodeState.failed(
+              DeviceCodeFailureDetails(
+                statusCode: e.statusCode,
+                reasonPhrase: e.reasonPhrase,
+                body: e.body,
+                message: e.message,
+              ),
+            ),
+          );
         }
-        // _tickerSubscription = _ticker.tick(
-        //   clientId: clientId,
-        //   tokenEndpoint: tokenEndpoint,
-        //   deviceCode: deviceCode,
-        //   interval: interval,
-        //   expiresIn: expiresIn,
-        // );
       }
     });
   }

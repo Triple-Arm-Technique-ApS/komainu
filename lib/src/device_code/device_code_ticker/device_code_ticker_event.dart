@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import '../../building_blocks/building_blocks.dart';
 import 'package:oauth2/oauth2.dart';
 
 @immutable
@@ -21,12 +22,15 @@ class DeviceCodeTickerEvent {
   /// token endpoint.
   final Credentials? credentials;
 
+  final HttpException? exception;
+
   const DeviceCodeTickerEvent({
     required this.expired,
     required this.declined,
     required this.badVerificationCode,
     required this.unexpected,
     this.credentials,
+    this.exception,
   });
 
   /// [successful] if the sign in flow completes and [credentials] are received.
@@ -74,12 +78,13 @@ class DeviceCodeTickerEvent {
       unexpected: false,
     );
   }
-  factory DeviceCodeTickerEvent.unexpected() {
-    return const DeviceCodeTickerEvent(
+  factory DeviceCodeTickerEvent.unexpected(HttpException exception) {
+    return DeviceCodeTickerEvent(
       expired: false,
       declined: false,
       badVerificationCode: false,
       unexpected: true,
+      exception: exception,
     );
   }
 

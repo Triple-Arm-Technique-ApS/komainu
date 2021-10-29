@@ -29,9 +29,9 @@ class DeviceCodeScreen extends StatelessWidget {
           'https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration',
         ),
         listener: (context, state) {
-          if (state.failed) {
+          if (state.status == WellKnownConfigurationStatus.failure) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(state.failure!.message),
+              content: Text(state.failureDetails!.message),
               duration: const Duration(seconds: 1),
               action: SnackBarAction(
                 label: 'Dismiss',
@@ -39,7 +39,7 @@ class DeviceCodeScreen extends StatelessWidget {
               ),
             ));
           }
-          if (state.successful) {
+          if (state.status == WellKnownConfigurationStatus.success) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: const Text('Successfully got the discovery document'),
@@ -53,7 +53,7 @@ class DeviceCodeScreen extends StatelessWidget {
           }
         },
         builder: (context, state) {
-          if (state.successful) {
+          if (state.status == WellKnownConfigurationStatus.success) {
             return OAuthSessionConsumer(
               create: () => OAuthConfiguration.fromDiscoveryDocument(
                 clientId: '4de9953a-e516-44e2-8faf-54556c3f46a8',

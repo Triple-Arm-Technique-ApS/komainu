@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:oauth2/oauth2.dart';
 
+import '../../building_blocks/building_blocks.dart';
 import '../../oauth_session/o_auth_configuration.dart';
 import 'device_code_ticker_event.dart';
 import 'device_polling_response.dart';
@@ -38,7 +39,13 @@ class DeviceCodeTicker {
         case 400:
           return _handleBadRequest(response);
         default:
-          return DeviceCodeTickerEvent.unexpected();
+          return DeviceCodeTickerEvent.unexpected(
+            HttpException(
+              statusCode: response.statusCode,
+              reasonPhrase: response.reasonPhrase,
+              body: response.body,
+            ),
+          );
       }
     });
   }
@@ -80,6 +87,12 @@ class DeviceCodeTicker {
       return DeviceCodeTickerEvent.expired();
     }
 
-    return DeviceCodeTickerEvent.unexpected();
+    return DeviceCodeTickerEvent.unexpected(
+      HttpException(
+        statusCode: response.statusCode,
+        reasonPhrase: response.reasonPhrase,
+        body: response.body,
+      ),
+    );
   }
 }

@@ -1,11 +1,11 @@
 part of 'well_known_configuration_bloc.dart';
 
-class WellKnownConfigurationFailure extends Equatable {
+class WellKnownConfigurationFailureDetails extends Equatable {
   final int statusCode;
   final String? reasonPhrase;
   final String body;
   final String message;
-  const WellKnownConfigurationFailure({
+  const WellKnownConfigurationFailureDetails({
     required this.statusCode,
     required this.reasonPhrase,
     required this.body,
@@ -17,37 +17,52 @@ class WellKnownConfigurationFailure extends Equatable {
 }
 
 class WellKnownConfigurationState extends Equatable {
-  /// [failure] contains information about why the
+  /// if [status] equals [WellKnownConfigurationStatus.failure] contains information about why the
   /// request to the identity provider failed.
-  final WellKnownConfigurationFailure? failure;
+  final WellKnownConfigurationFailureDetails? failureDetails;
 
-  /// if [successful] the [discoveryDocument] won't
+  /// if [status] equals [WellKnownConfigurationStatus.successful] the [discoveryDocument] won't
   /// be null.
   final DiscoveryDocument? discoveryDocument;
 
-  /// If [successful] the identity provider returns a successful
-  /// HTTP response.
-  bool get successful => discoveryDocument != null;
+  /// The current [status] of the state if [status] is [WellKnownConfigurationStatus.inital] nothing has happend
+  /// yet, [WellKnownConfigurationStatus.loading] when is right before and during the request to the endpoint,
+  /// [WellKnownConfigurationStatus.failure] indicates that an [Exception] was thrown or the [Response] from the
+  /// endpoint contains an error code, if the [discoveryDocument]  was returned without issues [status] is set
+  /// to [WellKnownConfigurationStatus.success].
+  final WellKnownConfigurationStatus status;
 
-  /// When [failed] the identity provider returns a failed
-  /// HTTP response.
-  bool get failed => failure != null;
   const WellKnownConfigurationState._({
-    this.failure,
+    this.failureDetails,
     this.discoveryDocument,
+    this.status = WellKnownConfigurationStatus.inital,
   });
 
   factory WellKnownConfigurationState.failed(
-          WellKnownConfigurationFailure exception) =>
-      WellKnownConfigurationState._(failure: exception);
+    WellKnownConfigurationFailureDetails details,
+  ) =>
+      WellKnownConfigurationState._(
+        failureDetails: details,
+        status: WellKnownConfigurationStatus.failure,
+      );
 
   factory WellKnownConfigurationState.successful(
           DiscoveryDocument discoveryDocument) =>
-      WellKnownConfigurationState._(discoveryDocument: discoveryDocument);
+      WellKnownConfigurationState._(
+        discoveryDocument: discoveryDocument,
+        status: WellKnownConfigurationStatus.success,
+      );
 
   factory WellKnownConfigurationState.initial() =>
       const WellKnownConfigurationState._();
 
+  factory WellKnownConfigurationState.loading() =>
+      const WellKnownConfigurationState._(
+        status: WellKnownConfigurationStatus.loading,
+      );
+
   @override
-  List<Object?> get props => [discoveryDocument, failure];
+  List<Object?> get props => [discoveryDocument, status];
 }
+
+enum WellKnownConfigurationStatus { inital, loading, success, failure }

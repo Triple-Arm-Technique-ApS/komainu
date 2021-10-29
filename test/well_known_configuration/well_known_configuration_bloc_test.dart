@@ -91,8 +91,9 @@ void mainBloc() {
             bloc.add(WellKnownConfigurationRequested(failureEndpoint)),
         wait: const Duration(seconds: 1),
         expect: () => <WellKnownConfigurationState>[
+          WellKnownConfigurationState.loading(),
           WellKnownConfigurationState.failed(
-            const WellKnownConfigurationFailure(
+            const WellKnownConfigurationFailureDetails(
               body: '{ "Error": "unexpected" }',
               statusCode: 500,
               reasonPhrase: 'Test Failure',
@@ -109,6 +110,7 @@ void mainBloc() {
             bloc.add(WellKnownConfigurationRequested(successEndpoint)),
         wait: const Duration(seconds: 1),
         expect: () => <WellKnownConfigurationState>[
+          WellKnownConfigurationState.loading(),
           WellKnownConfigurationState.successful(
             DiscoveryDocument(
               issuer: issuer,
@@ -129,8 +131,9 @@ void mainBloc() {
         ),
         wait: const Duration(seconds: 1),
         expect: () => <WellKnownConfigurationState>[
+          WellKnownConfigurationState.loading(),
           WellKnownConfigurationState.failed(
-            const WellKnownConfigurationFailure(
+            const WellKnownConfigurationFailureDetails(
               statusCode: 0,
               reasonPhrase: 'Unexpected',
               body: 'Exception was thrown: Exception: Test Error',

@@ -20,6 +20,9 @@ class WellKnownConfigurationBloc
     on<WellKnownConfigurationEvent>((event, emit) async {
       if (event is WellKnownConfigurationRequested) {
         try {
+          emit(
+            WellKnownConfigurationState.loading(),
+          );
           final discoveryDocument = await _getDiscoveryDocument(
             event.wellKnownConfigurationEndpoint,
           );
@@ -29,7 +32,7 @@ class WellKnownConfigurationBloc
         } on HttpException catch (exception) {
           emit(
             WellKnownConfigurationState.failed(
-              WellKnownConfigurationFailure(
+              WellKnownConfigurationFailureDetails(
                 body: exception.body,
                 statusCode: exception.statusCode,
                 reasonPhrase: exception.reasonPhrase,
