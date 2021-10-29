@@ -1,22 +1,6 @@
 part of 'device_code_bloc.dart';
 
-class DeviceCodeFailureDetails extends Equatable {
-  final int statusCode;
-  final String? reasonPhrase;
-  final String body;
-  final String message;
-  const DeviceCodeFailureDetails({
-    required this.statusCode,
-    required this.reasonPhrase,
-    required this.body,
-    required this.message,
-  });
-
-  @override
-  List<Object?> get props => [statusCode, reasonPhrase, body, message];
-}
-
-class DeviceCodeState {
+class DeviceCodeState extends Equatable {
   /// The current status of the [DeviceCodeState], [DeviceCodeStatus.loading] is
   /// while the authorization request is sent to the server then if successful
   /// the [status] will become [DeviceCodeStatus.running] with [userCode] and [verificationUri]
@@ -35,18 +19,18 @@ class DeviceCodeState {
   /// A short string shown to the user that's used to identify the session on a secondary device.
   final String? userCode;
 
-  final DeviceCodeFailureDetails? failureDetails;
+  final FailureDetails? failureDetails;
 
-  DeviceCodeState._({
+  const DeviceCodeState._({
     this.userCode,
     this.verificationUri,
     this.failureDetails,
     this.status = DeviceCodeStatus.initial,
   });
 
-  factory DeviceCodeState.initial() => DeviceCodeState._();
+  factory DeviceCodeState.initial() => const DeviceCodeState._();
 
-  factory DeviceCodeState.loading() => DeviceCodeState._(
+  factory DeviceCodeState.loading() => const DeviceCodeState._(
         status: DeviceCodeStatus.loading,
       );
   factory DeviceCodeState.running(String userCode, Uri verificationUri) =>
@@ -56,25 +40,32 @@ class DeviceCodeState {
         status: DeviceCodeStatus.running,
       );
 
-  factory DeviceCodeState.failed(DeviceCodeFailureDetails details) =>
-      DeviceCodeState._(
+  factory DeviceCodeState.failed(FailureDetails details) => DeviceCodeState._(
         failureDetails: details,
         status: DeviceCodeStatus.failure,
       );
 
-  factory DeviceCodeState.success() => DeviceCodeState._(
+  factory DeviceCodeState.success() => const DeviceCodeState._(
         status: DeviceCodeStatus.success,
       );
-  factory DeviceCodeState.badVerificationCode() => DeviceCodeState._(
+  factory DeviceCodeState.badVerificationCode() => const DeviceCodeState._(
         status: DeviceCodeStatus.badCode,
       );
-  factory DeviceCodeState.declined() => DeviceCodeState._(
+  factory DeviceCodeState.declined() => const DeviceCodeState._(
         status: DeviceCodeStatus.declined,
       );
 
-  factory DeviceCodeState.expired() => DeviceCodeState._(
+  factory DeviceCodeState.expired() => const DeviceCodeState._(
         status: DeviceCodeStatus.declined,
       );
+
+  @override
+  List<Object?> get props => [
+        status,
+        verificationUri,
+        userCode,
+        failureDetails,
+      ];
 }
 
 enum DeviceCodeStatus {

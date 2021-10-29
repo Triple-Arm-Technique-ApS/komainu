@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:http/http.dart';
 import 'package:komainu/src/building_blocks/exceptions/http_exception.dart';
+import 'package:komainu/src/building_blocks/failure_details.dart';
 import '../discovery_document.dart';
 import 'package:meta/meta.dart';
 
@@ -32,7 +33,7 @@ class WellKnownConfigurationBloc
         } on HttpException catch (exception) {
           emit(
             WellKnownConfigurationState.failed(
-              WellKnownConfigurationFailureDetails(
+              FailureDetails(
                 body: exception.body,
                 statusCode: exception.statusCode,
                 reasonPhrase: exception.reasonPhrase,

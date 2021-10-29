@@ -24,10 +24,36 @@ class DeviceCodeBloc extends Bloc<DeviceCodeEvent, DeviceCodeState> {
   DeviceCodeBloc(this.client, this.configuration)
       : _ticker = DeviceCodeTicker(client),
         super(DeviceCodeState.initial()) {
+    on<_TickerEvent>((event, emit) async {
+      switch (event.status) {
+        case _TickerStatus.badCode:
+          emit(DeviceCodeState.badVerificationCode());
+          break;
+        case _TickerStatus.declined:
+          emit(DeviceCodeState.declined());
+          break;
+        case _TickerStatus.expired:
+          emit(DeviceCodeState.expired());
+          break;
+        case _TickerStatus.failure:
+          emit(DeviceCodeState.failed(event.failureDetails!));
+          break;
+        case _TickerStatus.running:
+          emit(
+            DeviceCodeState.running(state.userCode!, state.verificationUri!),
+          );
+          break;
+        case _TickerStatus.success:
+          emit(
+            DeviceCodeState.success(),
+          );
+          break;
+        default:
+      }
+    });
     on<DeviceCodeEvent>((event, emit) async {
       if (event is DeviceCodeStartEvent) {
         emit(DeviceCodeState.loading());
-        _tickerSubscription?.cancel();
         try {
           var response = await initializeAuthorization();
           emit(
@@ -36,48 +62,11 @@ class DeviceCodeBloc extends Bloc<DeviceCodeEvent, DeviceCodeState> {
               response.verificationUri,
             ),
           );
-          _tickerSubscription = _ticker
-              .tick(
-            configuration: configuration,
-            deviceCode: response.deviceCode,
-            interval: response.interval,
-            expiresIn: response.expiresIn,
-          )
-              .listen(
-            (event) {
-              if (event.badVerificationCode) {
-                emit(DeviceCodeState.badVerificationCode());
-              } else if (event.declined) {
-                emit(DeviceCodeState.declined());
-              } else if (event.expired) {
-                emit(DeviceCodeState.expired());
-              } else if (event.unexpected) {
-                emit(
-                  DeviceCodeState.failed(
-                    DeviceCodeFailureDetails(
-                      statusCode: event.exception!.statusCode,
-                      reasonPhrase: event.exception!.reasonPhrase,
-                      body: event.exception!.body,
-                      message: event.exception!.message,
-                    ),
-                  ),
-                );
-              } else if (event.successful) {
-                emit(DeviceCodeState.success());
-              } else {
-                emit(
-                  DeviceCodeState.running(
-                    response.userCode,
-                    response.verificationUri,
-                  ),
-                );
-              }
-            },
-          );
+          _beginPollingTokenEndpoint(response);
         } on HttpException catch (e) {
           emit(
             DeviceCodeState.failed(
-              DeviceCodeFailureDetails(
+              FailureDetails(
                 statusCode: e.statusCode,
                 reasonPhrase: e.reasonPhrase,
                 body: e.body,
@@ -94,10 +83,12 @@ class DeviceCodeBloc extends Bloc<DeviceCodeEvent, DeviceCodeState> {
     try {
       final payload = {
         'client_id': configuration.clientId,
-        'scope': configuration.scope,
+        'scope': configuration.scope.join(' '),
       };
-      final response =
-          await client.post(configuration.authorizationEndpoint, body: payload);
+      final response = await client.post(
+        configuration.authorizationEndpoint,
+        body: payload,
+      );
       if (response.statusCode < 200 || response.statusCode > 299) {
         throw HttpException(
           statusCode: response.statusCode,
@@ -115,6 +106,49 @@ class DeviceCodeBloc extends Bloc<DeviceCodeEvent, DeviceCodeState> {
         body: 'Exception was thrown: $e',
       );
     }
+  }
+
+  void _beginPollingTokenEndpoint(DeviceAuthorizationResponse response) {
+    _tickerSubscription?.cancel();
+    _tickerSubscription = _ticker
+        .tick(
+      configuration: configuration,
+      deviceCode: response.deviceCode,
+      interval: response.interval,
+      expiresIn: response.expiresIn,
+    )
+        .listen(
+      (event) {
+        if (event.badVerificationCode) {
+          add(_TickerEvent(status: _TickerStatus.badCode));
+          _tickerSubscription?.cancel();
+        } else if (event.declined) {
+          add(_TickerEvent(status: _TickerStatus.declined));
+          _tickerSubscription?.cancel();
+        } else if (event.expired) {
+          add(_TickerEvent(status: _TickerStatus.expired));
+          _tickerSubscription?.cancel();
+        } else if (event.unexpected) {
+          add(
+            _TickerEvent(
+              status: _TickerStatus.failure,
+              failureDetails: FailureDetails(
+                statusCode: event.exception!.statusCode,
+                reasonPhrase: event.exception!.reasonPhrase,
+                body: event.exception!.body,
+                message: event.exception!.message,
+              ),
+            ),
+          );
+          _tickerSubscription?.cancel();
+        } else if (event.successful) {
+          add(_TickerEvent(status: _TickerStatus.success));
+          _tickerSubscription?.cancel();
+        } else {
+          add(_TickerEvent(status: _TickerStatus.running));
+        }
+      },
+    );
   }
 
   @override

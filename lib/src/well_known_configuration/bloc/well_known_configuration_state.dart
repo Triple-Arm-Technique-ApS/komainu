@@ -1,25 +1,9 @@
 part of 'well_known_configuration_bloc.dart';
 
-class WellKnownConfigurationFailureDetails extends Equatable {
-  final int statusCode;
-  final String? reasonPhrase;
-  final String body;
-  final String message;
-  const WellKnownConfigurationFailureDetails({
-    required this.statusCode,
-    required this.reasonPhrase,
-    required this.body,
-    required this.message,
-  });
-
-  @override
-  List<Object?> get props => [statusCode, reasonPhrase, body, message];
-}
-
 class WellKnownConfigurationState extends Equatable {
   /// if [status] equals [WellKnownConfigurationStatus.failure] contains information about why the
   /// request to the identity provider failed.
-  final WellKnownConfigurationFailureDetails? failureDetails;
+  final FailureDetails? failureDetails;
 
   /// if [status] equals [WellKnownConfigurationStatus.successful] the [discoveryDocument] won't
   /// be null.
@@ -39,7 +23,7 @@ class WellKnownConfigurationState extends Equatable {
   });
 
   factory WellKnownConfigurationState.failed(
-    WellKnownConfigurationFailureDetails details,
+    FailureDetails details,
   ) =>
       WellKnownConfigurationState._(
         failureDetails: details,

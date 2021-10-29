@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:http/http.dart';
 import 'package:komainu/komainu.dart';
+import 'package:komainu/src/building_blocks/failure_details.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
@@ -93,7 +94,7 @@ void mainBloc() {
         expect: () => <WellKnownConfigurationState>[
           WellKnownConfigurationState.loading(),
           WellKnownConfigurationState.failed(
-            const WellKnownConfigurationFailureDetails(
+            const FailureDetails(
               body: '{ "Error": "unexpected" }',
               statusCode: 500,
               reasonPhrase: 'Test Failure',
@@ -133,7 +134,7 @@ void mainBloc() {
         expect: () => <WellKnownConfigurationState>[
           WellKnownConfigurationState.loading(),
           WellKnownConfigurationState.failed(
-            const WellKnownConfigurationFailureDetails(
+            const FailureDetails(
               statusCode: 0,
               reasonPhrase: 'Unexpected',
               body: 'Exception was thrown: Exception: Test Error',
