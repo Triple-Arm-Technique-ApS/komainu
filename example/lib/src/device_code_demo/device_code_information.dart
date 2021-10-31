@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class DeviceCodeInformation extends StatelessWidget {
+  final Uri verificationUri;
+  final String userCode;
   final VoidCallback onRefreshPressed;
   final VoidCallback onCopyCodePressed;
   final VoidCallback onOpenLinkPressed;
@@ -12,6 +14,8 @@ class DeviceCodeInformation extends StatelessWidget {
     required this.onCopyCodePressed,
     required this.onOpenLinkPressed,
     required this.onCancelPressed,
+    required this.verificationUri,
+    required this.userCode,
   }) : super(key: key);
 
   @override
@@ -51,7 +55,7 @@ class DeviceCodeInformation extends StatelessWidget {
             _buildTextDisplay(
               context,
               Text(
-                '1234',
+                userCode,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontSize: 24,
@@ -78,8 +82,8 @@ class DeviceCodeInformation extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             Text(
-              'Navigate to the following link and enter the code you\'ve copied.\n' +
-                  'Follow the provided instructions to authorize this application.',
+              'Navigate to the following link and enter the code you\'ve copied.\n'
+              'Follow the provided instructions to authorize this application.',
               style: Theme.of(context).textTheme.bodyText1!,
               textAlign: TextAlign.center,
             ),
@@ -89,7 +93,7 @@ class DeviceCodeInformation extends StatelessWidget {
             _buildTextDisplay(
               context,
               Text(
-                'https://lol.dk/devicecode',
+                verificationUri.toString(),
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimary,
                 ),

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
-import '../../building_blocks/building_blocks.dart';
 import 'package:oauth2/oauth2.dart';
+
+import '../../../building_blocks/building_blocks.dart';
 
 @immutable
 class DeviceCodeTickerEvent {

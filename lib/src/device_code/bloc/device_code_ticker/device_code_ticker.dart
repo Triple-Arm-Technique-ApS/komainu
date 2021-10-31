@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:oauth2/oauth2.dart';
 
-import '../../building_blocks/building_blocks.dart';
-import '../../oauth_session/o_auth_configuration.dart';
+import '../../../building_blocks/building_blocks.dart';
+import '../../../oauth_session/o_auth_configuration.dart';
 import 'device_code_ticker_event.dart';
 import 'device_polling_response.dart';
 

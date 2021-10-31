@@ -3,16 +3,18 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
-import 'package:meta/meta.dart';
 
 import '../../building_blocks/building_blocks.dart';
-import '../device_code_ticker/device_authorization_response.dart';
-import '../device_code_ticker/device_code_ticker.dart';
-import '../device_code_ticker/device_code_ticker_event.dart';
+import 'device_code_ticker/device_authorization_response.dart';
+import 'device_code_ticker/device_code_ticker.dart';
+import 'device_code_ticker/device_code_ticker_event.dart';
 
 part 'device_code_event.dart';
 part 'device_code_state.dart';
+
+typedef ConfigureOAuthCreator = OAuthConfiguration Function();
 
 class DeviceCodeBloc extends Bloc<DeviceCodeEvent, DeviceCodeState> {
   final DeviceCodeTicker _ticker;
@@ -51,30 +53,28 @@ class DeviceCodeBloc extends Bloc<DeviceCodeEvent, DeviceCodeState> {
         default:
       }
     });
-    on<DeviceCodeEvent>((event, emit) async {
-      if (event is DeviceCodeStartEvent) {
-        emit(DeviceCodeState.loading());
-        try {
-          var response = await initializeAuthorization();
-          emit(
-            DeviceCodeState.running(
-              response.userCode,
-              response.verificationUri,
+    on<DeviceCodeStartEvent>((event, emit) async {
+      emit(DeviceCodeState.loading());
+      try {
+        var response = await initializeAuthorization();
+        emit(
+          DeviceCodeState.running(
+            response.userCode,
+            response.verificationUri,
+          ),
+        );
+        _beginPollingTokenEndpoint(response);
+      } on HttpException catch (e) {
+        emit(
+          DeviceCodeState.failed(
+            FailureDetails(
+              statusCode: e.statusCode,
+              reasonPhrase: e.reasonPhrase,
+              body: e.body,
+              message: e.message,
             ),
-          );
-          _beginPollingTokenEndpoint(response);
-        } on HttpException catch (e) {
-          emit(
-            DeviceCodeState.failed(
-              FailureDetails(
-                statusCode: e.statusCode,
-                reasonPhrase: e.reasonPhrase,
-                body: e.body,
-                message: e.message,
-              ),
-            ),
-          );
-        }
+          ),
+        );
       }
     });
   }
@@ -86,7 +86,7 @@ class DeviceCodeBloc extends Bloc<DeviceCodeEvent, DeviceCodeState> {
         'scope': configuration.scope.join(' '),
       };
       final response = await client.post(
-        configuration.authorizationEndpoint,
+        configuration.deviceAuthorizationEndpoint!,
         body: payload,
       );
       if (response.statusCode < 200 || response.statusCode > 299) {

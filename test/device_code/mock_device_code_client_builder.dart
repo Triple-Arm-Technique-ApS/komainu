@@ -65,7 +65,7 @@ class MockDeviceCodeClientBuilder {
     return _createBadRequestResponse('bad_verification_code');
   }
 
-  Future<Response> createExpiredCodeResponse() {
+  static Future<Response> createExpiredCodeResponse() {
     return _createBadRequestResponse('expired_token');
   }
 

@@ -26,6 +26,10 @@ class OAuthConfiguration {
   /// This is REQUIRED unless only the Implicit Flow is used.
   final Uri tokenEndpoint;
 
+  /// The device authorization endpoint can be used to request device and user codes.
+  /// This endpoint is used to start the device flow authorization process.
+  final Uri? deviceAuthorizationEndpoint;
+
   OAuthConfiguration(
     this.clientId,
     this.redirectUri,
@@ -34,6 +38,7 @@ class OAuthConfiguration {
     this.endSessionEndpoint,
     this.userInfoEndpoint,
     this.tokenEndpoint,
+    this.deviceAuthorizationEndpoint,
   );
 
   factory OAuthConfiguration.fromDiscoveryDocument({
@@ -50,6 +55,7 @@ class OAuthConfiguration {
       discoveryDocument.endSessionEndpoint,
       discoveryDocument.userInfoEndpoint,
       discoveryDocument.tokenEndpoint,
+      discoveryDocument.deviceAuthorizationEndpoint,
     );
   }
 }

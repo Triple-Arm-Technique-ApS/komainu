@@ -25,6 +25,10 @@ class DiscoveryDocument extends Equatable {
   /// This document contains signing keys that clients use to validate the signatures from the provider.
   final Uri? jwksUri;
 
+  /// The device authorization endpoint can be used to request device and user codes.
+  /// This endpoint is used to start the device flow authorization process.
+  final Uri? deviceAuthorizationEndpoint;
+
   /// [responseTypesSupported]  array containing a list of OAuth 2.0 response types supported by this provider.
   final List<String> responseModesSupported;
 
@@ -40,6 +44,7 @@ class DiscoveryDocument extends Equatable {
     this.userInfoEndpoint,
     this.endSessionEndpoint,
     this.jwksUri,
+    this.deviceAuthorizationEndpoint,
   });
 
   factory DiscoveryDocument.fromJson(Map<String, dynamic> json) {
@@ -65,6 +70,10 @@ class DiscoveryDocument extends Equatable {
       jwksUri: json.containsKey('jwks_uri')
           ? Uri.parse(json['jwks_uri'] as String)
           : null,
+      deviceAuthorizationEndpoint:
+          json.containsKey('device_authorization_endpoint')
+              ? Uri.parse(json['device_authorization_endpoint'] as String)
+              : null,
     );
   }
 
@@ -86,6 +95,7 @@ class DiscoveryDocument extends Equatable {
         endSessionEndpoint,
         jwksUri,
         responseModesSupported,
-        responseTypesSupported
+        responseTypesSupported,
+        deviceAuthorizationEndpoint,
       ];
 }
