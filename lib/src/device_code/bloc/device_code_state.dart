@@ -58,7 +58,9 @@ class DeviceCodeState extends Equatable {
   factory DeviceCodeState.expired() => const DeviceCodeState._(
         status: DeviceCodeStatus.declined,
       );
-
+  factory DeviceCodeState.cancelled() => const DeviceCodeState._(
+        status: DeviceCodeStatus.cancelled,
+      );
   @override
   List<Object?> get props => [
         status,
@@ -69,6 +71,7 @@ class DeviceCodeState extends Equatable {
 }
 
 enum DeviceCodeStatus {
+  cancelled,
   initial,
   loading,
   running,

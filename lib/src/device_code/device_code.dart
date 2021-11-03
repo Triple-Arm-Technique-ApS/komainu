@@ -25,4 +25,8 @@ class DeviceCode {
   void cancel() {
     _context.read<DeviceCodeBloc>().add(DeviceCodeStartStopEvent.stop());
   }
+
+  void restart() {
+    _context.read<DeviceCodeBloc>().add(DeviceCodeStartStopEvent.start());
+  }
 }

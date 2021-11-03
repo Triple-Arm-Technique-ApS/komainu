@@ -56,6 +56,10 @@ class DeviceCodeBloc extends Bloc<DeviceCodeEvent, DeviceCodeState> {
               ),
             );
           }
+        } else {
+          emit(
+            DeviceCodeState.cancelled(),
+          );
         }
       },
       transformer: restartable(),

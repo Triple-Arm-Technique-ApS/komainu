@@ -1,3 +1,5 @@
+import 'package:url_launcher/url_launcher.dart';
+import 'package:clipboard/clipboard.dart';
 import 'package:example/src/device_code_demo/device_code_information.dart';
 import 'package:example/src/device_code_demo/welcome_information.dart';
 import 'package:example/src/layout/dawer.dart';
@@ -75,7 +77,20 @@ class DeviceCodeScreen extends StatelessWidget {
                     CustomDawer(
                       child: DeviceCodeConsumer(
                         create: () => configuration,
-                        listener: (context, state) {},
+                        listener: (context, state) {
+                          if (state.status == DeviceCodeStatus.cancelled) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: const Text('Authorization Cancelled!'),
+                                duration: const Duration(seconds: 1),
+                                action: SnackBarAction(
+                                  label: 'Dismiss',
+                                  onPressed: () {},
+                                ),
+                              ),
+                            );
+                          }
+                        },
                         builder: (context, state) {
                           return AnimatedSwitcher(
                             duration: const Duration(
@@ -105,6 +120,12 @@ class DeviceCodeScreen extends StatelessWidget {
 
   Widget _buildFromState(BuildContext context, DeviceCodeState state) {
     switch (state.status) {
+      case DeviceCodeStatus.cancelled:
+        return WelcomeInformation(
+          onLetsGetStartedPressed: () {
+            DeviceCode.of(context).start();
+          },
+        );
       case DeviceCodeStatus.initial:
         return WelcomeInformation(
           onLetsGetStartedPressed: () {
@@ -115,9 +136,41 @@ class DeviceCodeScreen extends StatelessWidget {
         return DeviceCodeInformation(
           userCode: state.userCode!,
           verificationUri: state.verificationUri!,
-          onRefreshPressed: () {},
-          onCopyCodePressed: () {},
-          onOpenLinkPressed: () {},
+          onRefreshPressed: () {
+            DeviceCode.of(context).restart();
+          },
+          onCopyCodePressed: () {
+            FlutterClipboard.copy(state.userCode!).then((_) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'User code added to clipboard: ${state.userCode!}',
+                  ),
+                  duration: const Duration(seconds: 1),
+                  action: SnackBarAction(
+                    label: 'Dismiss',
+                    onPressed: () {},
+                  ),
+                ),
+              );
+            });
+          },
+          onOpenLinkPressed: () async {
+            await canLaunch(state.verificationUri!.toString())
+                ? await launch(state.verificationUri!.toString())
+                : ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Unable to launch ${state.verificationUri!}',
+                      ),
+                      duration: const Duration(seconds: 1),
+                      action: SnackBarAction(
+                        label: 'Dismiss',
+                        onPressed: () {},
+                      ),
+                    ),
+                  );
+          },
           onCancelPressed: () {
             DeviceCode.of(context).cancel();
           },
