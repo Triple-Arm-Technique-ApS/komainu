@@ -2,6 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:komainu/komainu.dart';
 import 'package:komainu/src/device_code/bloc/device_code_bloc.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:oauth2/oauth2.dart';
 import 'package:test/test.dart';
 
 import 'mock_device_code_client_builder.dart';
@@ -131,6 +132,27 @@ void mainBloc() {
         expect: () => [
           DeviceCodeState.loading(),
           DeviceCodeState.running(userCode, verificationUri),
+        ],
+      );
+      blocTest<DeviceCodeBloc, DeviceCodeState>(
+        'emits [loading,running, success] when the authorization request is successful and the token request is successful',
+        build: () => DeviceCodeBloc(
+          MockDeviceCodeClientBuilder.create(
+            MockDeviceCodeClientBuilder.createAuthorizationSuccessfulResponse,
+            MockDeviceCodeClientBuilder.createSuccessResponse,
+            configuration,
+            deviceCode,
+            userCode,
+            verificationUri,
+          ),
+          configuration,
+        ),
+        act: (bloc) => bloc.add(DeviceCodeStartStopEvent.start()),
+        wait: const Duration(seconds: 2),
+        expect: () => [
+          DeviceCodeState.loading(),
+          DeviceCodeState.running(userCode, verificationUri),
+          DeviceCodeState.success(Credentials(dummyAccessToken)),
         ],
       );
     },

@@ -7,6 +7,9 @@ import 'package:mocktail/mocktail.dart';
 
 class MockClient extends Mock implements Client {}
 
+const String dummyAccessToken =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+
 typedef AuthorizationCallback = Future<Response> Function(
   String userCode,
   String deviceCode,
@@ -90,5 +93,16 @@ class MockDeviceCodeClientBuilder {
 
   static Future<Response> _createBadRequestResponse(String error) {
     return SynchronousFuture(Response(jsonEncode({'error': error}), 400));
+  }
+
+  static Future<Response> createSuccessResponse() {
+    return SynchronousFuture(
+      Response(
+        jsonEncode(
+          {'access_token': dummyAccessToken},
+        ),
+        200,
+      ),
+    );
   }
 }

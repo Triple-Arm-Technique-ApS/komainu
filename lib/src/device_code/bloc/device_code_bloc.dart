@@ -28,7 +28,7 @@ class DeviceCodeBloc extends Bloc<DeviceCodeEvent, DeviceCodeState> {
         super(DeviceCodeState.initial()) {
     on<DeviceCodeStartStopEvent>(
       (event, emit) async {
-        if (event.start) {
+        if (event.status == DeviceCodeStartStopStatus.started) {
           emit(DeviceCodeState.loading());
           try {
             var response = await initializeAuthorization();
@@ -55,7 +55,8 @@ class DeviceCodeBloc extends Bloc<DeviceCodeEvent, DeviceCodeState> {
               ),
             );
           }
-        } else {
+        }
+        if (event.status == DeviceCodeStartStopStatus.cancelled) {
           emit(
             DeviceCodeState.cancelled(),
           );

@@ -3,16 +3,21 @@ part of 'device_code_bloc.dart';
 @immutable
 abstract class DeviceCodeEvent {}
 
-class DeviceCodeStartStopEvent extends DeviceCodeEvent {
-  final bool start;
+enum DeviceCodeStartStopStatus { started, stopped, cancelled }
 
-  DeviceCodeStartStopEvent(this.start);
+class DeviceCodeStartStopEvent extends DeviceCodeEvent {
+  final DeviceCodeStartStopStatus status;
+  DeviceCodeStartStopEvent(this.status);
 
   factory DeviceCodeStartStopEvent.start() {
-    return DeviceCodeStartStopEvent(true);
+    return DeviceCodeStartStopEvent(DeviceCodeStartStopStatus.started);
   }
 
   factory DeviceCodeStartStopEvent.stop() {
-    return DeviceCodeStartStopEvent(false);
+    return DeviceCodeStartStopEvent(DeviceCodeStartStopStatus.stopped);
+  }
+
+  factory DeviceCodeStartStopEvent.cancel() {
+    return DeviceCodeStartStopEvent(DeviceCodeStartStopStatus.cancelled);
   }
 }

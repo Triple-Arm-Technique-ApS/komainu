@@ -23,7 +23,7 @@ class DeviceCode {
 
   /// Attempts to cancel the polling to the device code endpoint.
   void cancel() {
-    _context.read<DeviceCodeBloc>().add(DeviceCodeStartStopEvent.stop());
+    _context.read<DeviceCodeBloc>().add(DeviceCodeStartStopEvent.cancel());
   }
 
   void restart() {
