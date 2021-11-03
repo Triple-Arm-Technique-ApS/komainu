@@ -3,23 +3,16 @@ part of 'device_code_bloc.dart';
 @immutable
 abstract class DeviceCodeEvent {}
 
-class DeviceCodeCancelledEvent extends DeviceCodeEvent {}
+class DeviceCodeStartStopEvent extends DeviceCodeEvent {
+  final bool start;
 
-class DeviceCodeFailedEvent extends DeviceCodeEvent {}
+  DeviceCodeStartStopEvent(this.start);
 
-class DeviceCodeSuccessEvent extends DeviceCodeEvent {}
+  factory DeviceCodeStartStopEvent.start() {
+    return DeviceCodeStartStopEvent(true);
+  }
 
-class DeviceCodeRetryEvent extends DeviceCodeEvent {}
-
-class DeviceCodeStartEvent extends DeviceCodeEvent {}
-
-enum _TickerStatus { running, failure, success, badCode, declined, expired }
-
-class _TickerEvent extends DeviceCodeEvent {
-  final _TickerStatus status;
-  final FailureDetails? failureDetails;
-  _TickerEvent({
-    required this.status,
-    this.failureDetails,
-  });
+  factory DeviceCodeStartStopEvent.stop() {
+    return DeviceCodeStartStopEvent(false);
+  }
 }

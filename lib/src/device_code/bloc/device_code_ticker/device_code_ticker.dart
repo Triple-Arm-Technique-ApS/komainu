@@ -20,34 +20,36 @@ class DeviceCodeTicker {
     required int expiresIn,
   }) {
     return Stream.periodic(Duration(seconds: interval), (x) => x * interval)
-        .asyncMap((secondsSinceStart) async {
-      if (secondsSinceStart > expiresIn) {
-        return DeviceCodeTickerEvent.expired();
-      }
-      final response = await _requestToken(
-        clientId: configuration.clientId,
-        deviceCode: deviceCode,
-        tokenEndpoint: configuration.tokenEndpoint,
-      );
-      switch (response.statusCode) {
-        case 200:
-          return DeviceCodeTickerEvent.successful(
-            Credentials.fromJson(
-              jsonDecode(response.body),
-            ),
-          );
-        case 400:
-          return _handleBadRequest(response);
-        default:
-          return DeviceCodeTickerEvent.unexpected(
-            HttpException(
-              statusCode: response.statusCode,
-              reasonPhrase: response.reasonPhrase,
-              body: response.body,
-            ),
-          );
-      }
-    });
+        .asyncMap(
+      (secondsSinceStart) async {
+        if (secondsSinceStart > expiresIn) {
+          return DeviceCodeTickerEvent.expired();
+        }
+        final response = await _requestToken(
+          clientId: configuration.clientId,
+          deviceCode: deviceCode,
+          tokenEndpoint: configuration.tokenEndpoint,
+        );
+        switch (response.statusCode) {
+          case 200:
+            return DeviceCodeTickerEvent.successful(
+              Credentials.fromJson(
+                jsonDecode(response.body),
+              ),
+            );
+          case 400:
+            return _handleBadRequest(response);
+          default:
+            return DeviceCodeTickerEvent.unexpected(
+              HttpException(
+                statusCode: response.statusCode,
+                reasonPhrase: response.reasonPhrase,
+                body: response.body,
+              ),
+            );
+        }
+      },
+    );
   }
 
   Future<http.Response> _requestToken({

@@ -108,7 +108,7 @@ class DeviceCodeScreen extends StatelessWidget {
       case DeviceCodeStatus.initial:
         return WelcomeInformation(
           onLetsGetStartedPressed: () {
-            DeviceCode.of(context).signIn();
+            DeviceCode.of(context).start();
           },
         );
       case DeviceCodeStatus.running:
@@ -118,10 +118,12 @@ class DeviceCodeScreen extends StatelessWidget {
           onRefreshPressed: () {},
           onCopyCodePressed: () {},
           onOpenLinkPressed: () {},
-          onCancelPressed: () {},
+          onCancelPressed: () {
+            DeviceCode.of(context).cancel();
+          },
         );
       default:
-        return Center();
+        return const SizedBox();
     }
   }
 }

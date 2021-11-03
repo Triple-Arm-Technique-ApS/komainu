@@ -62,7 +62,7 @@ void mainBloc() {
           ),
           configuration,
         ),
-        act: (bloc) => bloc.add(DeviceCodeStartEvent()),
+        act: (bloc) => bloc.add(DeviceCodeStartStopEvent.start()),
         wait: const Duration(seconds: 2),
         expect: () => [
           DeviceCodeState.loading(),
@@ -84,7 +84,7 @@ void mainBloc() {
           ),
           configuration,
         ),
-        act: (bloc) => bloc.add(DeviceCodeStartEvent()),
+        act: (bloc) => bloc.add(DeviceCodeStartStopEvent.start()),
         wait: const Duration(seconds: 2),
         expect: () => [
           DeviceCodeState.loading(),
@@ -105,7 +105,7 @@ void mainBloc() {
           ),
           configuration,
         ),
-        act: (bloc) => bloc.add(DeviceCodeStartEvent()),
+        act: (bloc) => bloc.add(DeviceCodeStartStopEvent.start()),
         wait: const Duration(seconds: 2),
         expect: () => [
           DeviceCodeState.loading(),
@@ -126,7 +126,7 @@ void mainBloc() {
           ),
           configuration,
         ),
-        act: (bloc) => bloc.add(DeviceCodeStartEvent()),
+        act: (bloc) => bloc.add(DeviceCodeStartStopEvent.start()),
         wait: const Duration(seconds: 2),
         expect: () => [
           DeviceCodeState.loading(),

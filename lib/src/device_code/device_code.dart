@@ -17,7 +17,12 @@ class DeviceCode {
 
   /// Emits an event to the [DeviceCodeBloc] to start
   /// the flow of the device code grant.
-  void signIn() {
-    _context.read<DeviceCodeBloc>().add(DeviceCodeStartEvent());
+  void start() {
+    _context.read<DeviceCodeBloc>().add(DeviceCodeStartStopEvent.start());
+  }
+
+  /// Attempts to cancel the polling to the device code endpoint.
+  void cancel() {
+    _context.read<DeviceCodeBloc>().add(DeviceCodeStartStopEvent.stop());
   }
 }

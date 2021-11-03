@@ -8,6 +8,7 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
+  bloc_concurrency: ^0.1.0
   equatable: ^2.0.3
   flutter:
     sdk: flutter
