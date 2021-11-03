@@ -1,20 +1,30 @@
 part of 'o_auth_session_bloc.dart';
 
+enum OAuthSessionStateStatus {
+  unauthorized,
+  authorized,
+  expired,
+}
+
 @immutable
 class OAuthSessionState {
-  /// [auhtorized] is true if the current session holds
-  /// an access token that is not [expired]
-  bool get authorized => !initial && !expired;
-
-  /// [expired] is true if the current session holds
-  /// an access token that is [expired]
-  bool get expired => !initial && credentials!.isExpired;
-
-  /// [initial] means that the session currently int in an authorized state.
-  bool get initial => credentials == null;
   final Credentials? credentials;
+  final OAuthSessionStateStatus status;
+  const OAuthSessionState._(this.credentials, this.status);
 
-  const OAuthSessionState(this.credentials);
+  factory OAuthSessionState.initial() => const OAuthSessionState._(
+        null,
+        OAuthSessionStateStatus.unauthorized,
+      );
 
-  factory OAuthSessionState.initial() => const OAuthSessionState(null);
+  factory OAuthSessionState.authorized(Credentials credentials) =>
+      OAuthSessionState._(
+        credentials,
+        OAuthSessionStateStatus.authorized,
+      );
+
+  factory OAuthSessionState.expired() => const OAuthSessionState._(
+        null,
+        OAuthSessionStateStatus.expired,
+      );
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:oauth2/oauth2.dart';
 import 'package:provider/provider.dart';
 
 import 'bloc/o_auth_session_bloc.dart';
@@ -19,5 +20,9 @@ class OAuthSession {
 
   void signOut() {
     _context.read<OAuthSessionBloc>().add(OAuthSignOutEvent());
+  }
+
+  void signIn(Credentials credentials) {
+    _context.read<OAuthSessionBloc>().add(OAuthSignInEvent(credentials));
   }
 }

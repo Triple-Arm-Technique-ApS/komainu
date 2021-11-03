@@ -32,11 +32,14 @@ class DeviceCodeTicker {
         );
         switch (response.statusCode) {
           case 200:
-            return DeviceCodeTickerEvent.successful(
-              Credentials.fromJson(
-                jsonDecode(response.body),
-              ),
+            final json = jsonDecode(response.body) as Map<String, dynamic>;
+            final credentials = Credentials(
+              json['access_token'],
+              idToken: json['id_token'],
+              refreshToken: json['refresh_token'],
+              scopes: json['scope']?.toString().split(' '),
             );
+            return DeviceCodeTickerEvent.successful(credentials);
           case 400:
             return _handleBadRequest(response);
           default:

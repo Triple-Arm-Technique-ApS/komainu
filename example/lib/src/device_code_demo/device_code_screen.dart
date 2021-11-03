@@ -52,12 +52,15 @@ class DeviceCodeScreen extends StatelessWidget {
               redirectUri: Uri.parse(
                 'https://localhost:4200/callback.html',
               ),
-              scope: ['User.Read'],
+              scope: ['User.Read', 'offline_access'],
               discoveryDocument: state.discoveryDocument!,
             );
             return OAuthSessionConsumer(
               create: () => configuration,
               builder: (context, state) {
+                if (state.status == OAuthSessionStateStatus.authorized) {
+                  return Text('rofsaodoasd');
+                }
                 return Row(
                   children: [
                     Expanded(
@@ -78,6 +81,9 @@ class DeviceCodeScreen extends StatelessWidget {
                       child: DeviceCodeConsumer(
                         create: () => configuration,
                         listener: (context, state) {
+                          if (state.status == DeviceCodeStatus.success) {
+                            OAuthSession.of(context).signIn(state.credentials!);
+                          }
                           if (state.status == DeviceCodeStatus.cancelled) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(

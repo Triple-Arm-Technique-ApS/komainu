@@ -21,11 +21,15 @@ class DeviceCodeState extends Equatable {
 
   final FailureDetails? failureDetails;
 
+  /// [credentials] are set after a successful authorization.
+  final oauth.Credentials? credentials;
+
   const DeviceCodeState._({
     this.userCode,
     this.verificationUri,
     this.failureDetails,
     this.status = DeviceCodeStatus.initial,
+    this.credentials,
   });
 
   factory DeviceCodeState.initial() => const DeviceCodeState._();
@@ -45,8 +49,10 @@ class DeviceCodeState extends Equatable {
         status: DeviceCodeStatus.failure,
       );
 
-  factory DeviceCodeState.success() => const DeviceCodeState._(
+  factory DeviceCodeState.success(oauth.Credentials credentials) =>
+      DeviceCodeState._(
         status: DeviceCodeStatus.success,
+        credentials: credentials,
       );
   factory DeviceCodeState.badVerificationCode() => const DeviceCodeState._(
         status: DeviceCodeStatus.badCode,

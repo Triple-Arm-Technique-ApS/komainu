@@ -6,6 +6,7 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
+import 'package:oauth2/oauth2.dart' as oauth;
 
 import '../../building_blocks/building_blocks.dart';
 import 'device_code_ticker/device_authorization_response.dart';
@@ -21,8 +22,6 @@ class DeviceCodeBloc extends Bloc<DeviceCodeEvent, DeviceCodeState> {
   final DeviceCodeTicker _ticker;
   final Client client;
   final OAuthConfiguration configuration;
-
-  // StreamSubscription<DeviceCodeTickerEvent>? _tickerSubscription;
 
   DeviceCodeBloc(this.client, this.configuration)
       : _ticker = DeviceCodeTicker(client),
@@ -129,7 +128,7 @@ class DeviceCodeBloc extends Bloc<DeviceCodeEvent, DeviceCodeState> {
         ),
       );
     } else if (event.successful) {
-      return DeviceCodeState.success();
+      return DeviceCodeState.success(event.credentials!);
     } else {
       return DeviceCodeState.running(state.userCode!, state.verificationUri!);
     }
